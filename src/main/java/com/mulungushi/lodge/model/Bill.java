@@ -1,6 +1,11 @@
-package model;
+package com.mulungushi.lodge.model;
 
-import javafx.beans.property.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Bill {
     private final StringProperty billId;
@@ -28,4 +33,12 @@ public class Bill {
     public DoubleProperty totalProperty() { return total; }
     public DoubleProperty paidProperty() { return paid; }
     public DoubleProperty balanceProperty() { return balance; }
+
+    public String getBillId() { return billId.get(); }
+    public String getGuestName() { return guestName.get(); }
+    public String getRoomType() { return roomType.get(); }
+    public int getNights() { return nights.get(); }
+    public double getTotal() { return total.get(); }
+    public double getPaid() { return paid.get(); }
+    public double getBalance() { return balance.get(); }
 }
