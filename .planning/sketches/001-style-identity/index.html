@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 001 — Style Identity · Lodge Billing Lab</title>
+<link rel="stylesheet" href="../themes/default.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #d8dde5;
+    font-family: var(--font-ui);
+    padding-top: 52px;
+    transition: background 0.2s ease;
+  }
+
+  /* ── Variant tab bar ─────────────────────────────────────── */
+  #variant-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+    background: #1a1f2b; border-bottom: 1px solid #000;
+    padding: 9px 16px; display: flex; gap: 8px; align-items: center;
+    font-family: system-ui; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .variant-tab {
+    background: transparent; color: #aab4c5; border: 1px solid #39424f;
+    padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all 0.15s ease;
+  }
+  .variant-tab:hover { color: #fff; border-color: #5b6675; }
+  .variant-tab.active { background: #2d6cdf; color: #fff; border-color: #2d6cdf; }
+  #variant-note { margin-left: auto; color: #7d8aa0; font-size: 12px; }
+
+  .variant { display: none; padding: 24px 16px 90px; }
+  .variant.active { display: block; }
+  #stage { max-width: 1280px; margin: 0 auto; transition: max-width 0.25s ease; }
+
+  /* ── Palette definitions (the three identities) ──────────── */
+  .palette-a {
+    --bg: #eef2f7; --surface: #ffffff;
+    --header: #1e3a8a; --header-2: #1e40af;
+    --primary: #2563eb; --primary-hover: #1d4ed8; --primary-contrast: #ffffff;
+    --text: #0f172a; --muted: #64748b; --label: #334155;
+    --panel: #eff6ff; --panel-border: #bfdbfe; --panel-title: #1e40af;
+    --table-head: #eff6ff; --table-head-text: #1e40af;
+    --zebra: #f8fafc; --border: #dbe3ee; --input-border: #cbd5e1;
+    --success: #15803d; --danger: #dc2626; --oweed: #b45309;
+    --display: 'Segoe UI', system-ui, sans-serif;
+    --numeric: 'Segoe UI', system-ui, sans-serif;
+    --radius: 8px;
+  }
+  .palette-b {
+    --bg: #f6efe3; --surface: #fffdf8;
+    --header: #6b2f10; --header-2: #8a3d18;
+    --primary: #c2410c; --primary-hover: #9a3412; --primary-contrast: #ffffff;
+    --text: #292524; --muted: #8a7f70; --label: #57534e;
+    --panel: #fbf1de; --panel-border: #ecd9b5; --panel-title: #92400e;
+    --table-head: #f7ecdc; --table-head-text: #7c2d12;
+    --zebra: #fbf7ef; --border: #e8dcc4; --input-border: #d6c5a5;
+    --success: #4d7c0f; --danger: #b91c1c; --oweed: #b45309;
+    --display: Candara, 'Segoe UI', system-ui, sans-serif;
+    --numeric: 'Segoe UI', system-ui, sans-serif;
+    --radius: 12px;
+  }
+  .palette-c {
+    --bg: #0b1220; --surface: #111a2e;
+    --header: #060b16; --header-2: #0c1424;
+    --primary: #14b8a6; --primary-hover: #0d9488; --primary-contrast: #04211d;
+    --text: #e2e8f0; --muted: #94a3b8; --label: #b6c2d4;
+    --panel: #16233b; --panel-border: #2b3c5e; --panel-title: #5eead4;
+    --table-head: #1b2a45; --table-head-text: #7dd3fc;
+    --zebra: #152136; --border: #26344f; --input-border: #33456a;
+    --success: #34d399; --danger: #f87171; --oweed: #fbbf24;
+    --display: 'Segoe UI', system-ui, sans-serif;
+    --numeric: Consolas, 'Courier New', monospace;
+    --radius: 6px;
+  }
+
+  /* ── App chrome (uses palette vars) ──────────────────────── */
+  .app {
+    background: var(--bg); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18); color: var(--text);
+    transition: background 0.2s ease;
+  }
+  .appbar {
+    background: linear-gradient(90deg, var(--header), var(--header-2));
+    color: #fff; display: flex; align-items: center;
+    padding: 0 24px; height: 62px;
+  }
+  .appbar-title { font-family: var(--display); font-size: 24px; font-weight: 700; letter-spacing: 0.2px; }
+  .menubar { margin-left: auto; display: flex; gap: 28px; font-size: 14px; }
+  .menubar span { cursor: pointer; opacity: 0.9; padding: 4px 2px; transition: opacity 0.15s; }
+  .menubar span:hover { opacity: 1; text-decoration: underline; }
+
+  .toolbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    display: flex; gap: 6px; padding: 8px 20px;
+  }
+  .tool {
+    display: flex; align-items: center; gap: 8px;
+    background: transparent; border: none; color: var(--label);
+    font-family: var(--font-ui); font-size: 13.5px; font-weight: 600;
+    padding: 8px 12px; border-radius: var(--radius); cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tool:hover { background: var(--table-head); color: var(--table-head-text); }
+  .tool svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .content { display: grid; grid-template-columns: 1fr 320px; gap: 28px; padding: 26px 28px 32px; }
+  @media (max-width: 900px) { .content { grid-template-columns: 1fr; } }
+
+  h1.screen-title { font-family: var(--display); font-size: 27px; font-weight: 700; color: var(--table-head-text); }
+  .subtitle { font-size: 13px; color: var(--muted); margin: 4px 0 20px; }
+  .subtitle b { color: var(--label); font-weight: 600; }
+
+  .form-grid { display: grid; grid-template-columns: 140px 1fr; gap: 12px 14px; align-items: center; max-width: 600px; }
+  .form-grid label { font-size: 13.5px; font-weight: 600; color: var(--label); text-align: right; }
+  .form-grid .full { grid-column: 2; }
+  .field {
+    width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font-ui);
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--input-border); border-radius: var(--radius);
+    outline: none; transition: all 0.15s ease;
+  }
+  .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent); }
+  textarea.field { resize: vertical; min-height: 46px; align-self: start; }
+  select.field { cursor: pointer; }
+
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .btn {
+    font-family: var(--font-ui); font-size: 14px; font-weight: 600;
+    padding: 9px 22px; border-radius: var(--radius); cursor: pointer;
+    border: 1px solid transparent; transition: all 0.15s ease;
+  }
+  .btn.primary { background: var(--primary); color: var(--primary-contrast); }
+  .btn.primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn.ghost { background: var(--surface); color: var(--label); border-color: var(--input-border); }
+  .btn.ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn:active { transform: translateY(0); }
+
+  .status { margin-top: 14px; font-size: 14px; font-weight: 700; min-height: 20px; color: var(--success); transition: color 0.15s; }
+  .status.error { color: var(--danger); }
+
+  .saved-title { font-family: var(--display); font-size: 19px; font-weight: 700; color: var(--table-head-text); margin: 24px 0 10px; }
+
+  .bills { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); font-size: 14px; }
+  .bills th {
+    background: var(--table-head); color: var(--table-head-text);
+    text-align: left; padding: 10px 14px; font-size: 13px; font-weight: 700;
+    border-bottom: 2px solid var(--border);
+  }
+  .bills td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .bills tbody tr:nth-child(even) { background: var(--zebra); }
+  .bills tbody tr { cursor: pointer; transition: background 0.12s ease; }
+  .bills tbody tr:hover { background: color-mix(in srgb, var(--table-head) 55%, transparent); }
+  .bills tbody tr.selected { outline: 2px solid var(--primary); outline-offset: -2px; }
+  .bills td.num, .bills th.num { text-align: right; font-family: var(--numeric); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .balance-owed { color: var(--oweed); font-weight: 700; }
+  .balance-paid { color: var(--success); font-weight: 700; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: var(--radius); padding: 20px; align-self: start;
+    box-shadow: var(--shadow-sm);
+  }
+  .panel h3 { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--panel-title); margin-bottom: 12px; }
+  .panel .price { font-size: 14px; margin-bottom: 7px; }
+  .panel .price b { font-weight: 700; }
+  .panel hr { border: none; border-top: 1px solid var(--panel-border); margin: 14px 0; }
+  .panel p { font-size: 13.5px; line-height: 1.55; color: var(--label); margin-bottom: 10px; }
+
+  .variant-caption { font-family: system-ui; font-size: 12.5px; color: #556; margin: 0 0 10px; }
+
+  /* ── Toast ───────────────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(8px);
+    background: #1a1f2b; color: #fff; font-family: system-ui; font-size: 13px;
+    padding: 10px 18px; border-radius: 8px; opacity: 0; pointer-events: none;
+    transition: all 0.25s ease; z-index: 9997;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Sketch toolbar ──────────────────────────────────────── */
+  #sketch-tools {
+    position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+    font-family: system-ui; font-size: 12px;
+    background: rgba(10, 14, 22, 0.85); color: white;
+    padding: 8px 12px; border-radius: 8px; opacity: 0.4;
+    transition: opacity 0.2s; display: flex; gap: 8px; align-items: center;
+  }
+  #sketch-tools:hover { opacity: 1; }
+  #sketch-tools button, #sketch-tools select {
+    font-size: 11px; background: #2c3542; color: #cdd6e4; border: none;
+    border-radius: 4px; padding: 4px 8px; cursor: pointer;
+  }
+  #sketch-tools button.on { background: #2d6cdf; color: #fff; }
+  #annot-tip {
+    position: fixed; z-index: 10000; display: none; pointer-events: none;
+    background: #ffd; border: 1px solid #cc9; color: #331; font-family: Consolas, monospace;
+    font-size: 11px; padding: 4px 7px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div id="variant-nav">
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: Boardroom Blue</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: Safari Lodge</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: Midnight Ledger ★ Selected</button>
+  <span id="variant-note">Palette &amp; type-scale comparison · fonts are all Windows system fonts</span>
+</div>
+
+<div id="stage">
+  <div id="variant-a" class="variant active">
+    <p class="variant-caption"><b>A: Boardroom Blue</b> — your reference, refined. Segoe UI throughout, tabular numerals, tighter spacing, focus rings.</p>
+    <div class="app palette-a" data-screen></div>
+  </div>
+  <div id="variant-b" class="variant" style="display:none">
+    <p class="variant-caption"><b>B: Safari Lodge</b> — warm hospitality palette (terracotta, cream, wood). Candara display headings, generous radii. A lodge should feel like a lodge.</p>
+    <div class="app palette-b" data-screen></div>
+  </div>
+  <div id="variant-c" class="variant" style="display:none">
+    <p class="variant-caption"><b>C: Midnight Ledger</b> — dark slate with teal accent. Consolas for all money figures, balance-at-a-glance coloring. Modern fintech feel.</p>
+    <div class="app palette-c" data-screen></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="sketch-tools">
+  <span>Viewport</span>
+  <button onclick="setViewport(1280, this)" class="on">Desktop</button>
+  <button onclick="setViewport(768, this)">Tablet</button>
+  <button onclick="setViewport(375, this)">Phone</button>
+  <button id="annot-btn" onclick="toggleAnnot(this)">Annotate</button>
+</div>
+<div id="annot-tip"></div>
+
+<script>
+/* ── Variant switching ─────────────────────────────────────── */
+function showVariant(id, btn) {
+  document.querySelectorAll('.variant').forEach(v => v.style.display = 'none');
+  document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('variant-' + id).style.display = 'block';
+  btn.classList.add('active');
+}
+
+/* ── Sketch tools ──────────────────────────────────────────── */
+function setViewport(w, btn) {
+  document.getElementById('stage').style.maxWidth = w === 1280 ? '1280px' : w + 'px';
+  document.querySelectorAll('#sketch-tools button').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+let annotOn = false;
+function toggleAnnot(btn) {
+  annotOn = !annotOn;
+  btn.classList.toggle('on', annotOn);
+  if (!annotOn) document.getElementById('annot-tip').style.display = 'none';
+}
+document.addEventListener('mousemove', e => {
+  const tip = document.getElementById('annot-tip');
+  if (!annotOn) { tip.style.display = 'none'; return; }
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el || el.closest('#sketch-tools') || el.closest('#variant-nav')) { tip.style.display = 'none'; return; }
+  const cs = getComputedStyle(el);
+  tip.innerHTML = 'font: ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily.split(',')[0].replace(/'/g, '') +
+    '<br>color: ' + cs.color + '<br>bg: ' + cs.backgroundColor;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 260) + 'px';
+  tip.style.top = (e.clientY + 16) + 'px';
+});
+
+/* ── Billing logic (mirrors BillingService) ────────────────── */
+const RATES = { Standard: 350, Deluxe: 550, Family: 750 };
+const THRESHOLD = 5, FACTOR = 0.95;
+const money = x => 'K ' + x.toFixed(2);
+
+function quote(room, nights, extras, paid) {
+  if (!(nights > 0)) throw 'Nights must be greater than 0.';
+  if (extras < 0 || paid < 0) throw 'Amounts cannot be negative.';
+  let roomTotal = RATES[room] * nights;
+  if (nights >= THRESHOLD) roomTotal *= FACTOR;
+  const total = roomTotal + extras;
+  return { total, balance: total - paid };
+}
+
+/* ── Screen template ───────────────────────────────────────── */
+const ICONS = {
+  person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  receipt: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>'
+};
+
+const TEMPLATE = `
+  <header class="appbar">
+    <div class="appbar-title">Lodge Billing Lab</div>
+    <nav class="menubar"><span>File</span><span>Help</span></nav>
+  </header>
+  <div class="toolbar">
+    <button class="tool" data-act="new">${ICONS.person} New guest</button>
+    <button class="tool" data-act="receipt">${ICONS.receipt} View receipt</button>
+    <button class="tool" data-act="delete">${ICONS.trash} Delete selected bill</button>
+  </div>
+  <main class="content">
+    <section>
+      <h1 class="screen-title">Lodge Billing Lab</h1>
+      <div class="subtitle">ICT261 Lecture 3 &nbsp;|&nbsp; <b>Mr E Nyirenda</b> &nbsp;|&nbsp; Mulungushi University</div>
+      <div class="form-grid">
+        <label>Guest name:</label><input class="field f-name" value="">
+        <label>Room type:</label>
+        <select class="field f-room"><option>Standard</option><option>Deluxe</option><option>Family</option></select>
+        <label>Nights:</label><input class="field f-nights" value="5">
+        <label>Extras in K:</label><input class="field f-extras" value="200">
+        <label>Amount paid in K:</label><input class="field f-paid" value="1000">
+        <label>Notes:</label><textarea class="field f-notes"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-act="calc">Calculate</button>
+        <button class="btn primary" data-act="save">Save bill</button>
+      </div>
+      <div class="status">Saved B003: Balance: K 1812.50</div>
+      <h2 class="saved-title">Saved bills</h2>
+      <table class="bills">
+        <thead><tr>
+          <th>Bill</th><th>Guest</th><th>Room</th>
+          <th class="num">Nights</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <aside class="panel">
+      <h3>Practice room prices</h3>
+      <div class="price"><b>Standard:</b>&nbsp; K 350.00 per night</div>
+      <div class="price"><b>Deluxe:</b>&nbsp; K 550.00 per night</div>
+      <div class="price"><b>Family:</b>&nbsp; K 750.00 per night</div>
+      <hr>
+      <p>5 nights or more: 5% off the room charge.</p>
+      <p>Extras get no discount. No tax in this lab.</p>
+      <p>Saved bills last only until you close the app.</p>
+    </aside>
+  </main>`;
+
+function initScreen(root) {
+  root.innerHTML = TEMPLATE;
+  const q = s => root.querySelector(s);
+  const tbody = q('tbody');
+  const status = q('.status');
+  let nextNum = 4, selected = null;
+
+  const rows = [
+    { id: 'B002', guest: 'Mary Banda', room: 'Standard', nights: 2, total: 800.00, paid: 500.00, balance: 300.00 },
+    { id: 'B003', guest: 'John Phiri', room: 'Deluxe', nights: 5, total: 2812.50, paid: 1000.00, balance: 1812.50 }
+  ];
+
+  function render() {
+    tbody.innerHTML = '';
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.id}</td><td>${r.guest}</td><td>${r.room}</td>` +
+        `<td class="num">${r.nights}</td><td class="num">${money(r.total)}</td>` +
+        `<td class="num">${money(r.paid)}</td>` +
+        `<td class="num ${r.balance > 0 ? 'balance-owed' : 'balance-paid'}">${money(r.balance)}</td>`;
+      tr.onclick = () => {
+        tbody.querySelectorAll('tr').forEach(x => x.classList.remove('selected'));
+        tr.classList.add('selected'); selected = r;
+      };
+      tbody.appendChild(tr);
+    });
+  }
+
+  function readForm() {
+    const nights = parseInt(q('.f-nights').value.trim(), 10);
+    const extras = parseFloat(q('.f-extras').value.trim());
+    const paid = parseFloat(q('.f-paid').value.trim());
+    return { guest: q('.f-name').value.trim(), room: q('.f-room').value, nights, extras, paid };
+  }
+
+  root.addEventListener('click', e => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (!act) return;
+    try {
+      if (act === 'calc') {
+        const f = readForm();
+        const qt = quote(f.room, f.nights, f.extras, f.paid);
+        status.className = 'status';
+        status.textContent = `Calculated Total: ${money(qt.total)}, Balance: ${money(qt.balance)}`;
+      }
+      if (act === 'save') {
+        const f = readForm();
+        if (!f.guest) throw 'Guest name is required.';
+        const qt = quote(f.room, f.nights, f.extras, f.paid);
+        const id = 'B' + String(nextNum++).padStart(3, '0');
+        rows.push({ id, guest: f.guest, room: f.room, nights: f.nights, total: qt.total, paid: f.paid, balance: qt.balance });
+        render();
+        status.className = 'status';
+        status.textContent = `Saved ${id}: Balance: ${money(qt.balance)}`;
+      }
+      if (act === 'new') {
+        ['f-name', 'f-nights', 'f-notes'].forEach(s => q('.' + s).value = '');
+        q('.f-extras').value = '0'; q('.f-paid').value = '0';
+        status.className = 'status'; status.textContent = '';
+      }
+      if (act === 'delete') {
+        if (selected) { rows.splice(rows.indexOf(selected), 1); selected = null; render(); }
+        else toast('Select a bill row first.');
+      }
+      if (act === 'receipt') toast('Receipt viewer — a later lab step.');
+    } catch (msg) {
+      status.className = 'status error';
+      status.textContent = 'Error: ' + msg;
+    }
+  });
+
+  render();
+}
+
+document.querySelectorAll('[data-screen]').forEach(initScreen);
+
+/* ── Toast ─────────────────────────────────────────────────── */
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
